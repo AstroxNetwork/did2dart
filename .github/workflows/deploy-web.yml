@@ -7,6 +7,9 @@ concurrency:
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 'lib/**'
+      - 'web/**'
     branches:
       - "main"
 jobs:
