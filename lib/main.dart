@@ -21,7 +21,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,21 +53,29 @@ class _MyHomePageState extends State<MyHomePage> {
   final _dids =
       NewValueNotifier<List<MapEntry<PlatformFile, List<String>>>>([]);
   final _loading = ValueNotifier(false);
+  final _options = NewValueNotifier(CodeOption());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: ValueListenableBuilder(
-          valueListenable: _dids,
-          builder: (context, value, child) {
-            if (value.isEmpty) {
-              return Text(widget.title);
-            }
-            return Text('${widget.title} (${value.length})');
-          },
-        ),
+        title: Text(widget.title),
         actions: [
+          ValueListenableBuilder(
+            valueListenable: _dids,
+            builder: (context, value, child) {
+              if (value.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return IconButton(
+                onPressed: () {
+                  _dids.newValue(_dids.value..clear());
+                },
+                icon: const Icon(Icons.clear_all_rounded),
+              );
+            },
+          ),
+          const SizedBox(width: 12.0),
           ValueListenableBuilder(
             valueListenable: _dids,
             builder: (context, value, child) {
@@ -83,47 +90,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   Icons.download_rounded,
                   size: 16.0,
                 ),
-                label: const Text('Download'),
-              );
-            },
-          ),
-          const SizedBox(width: 12.0),
-          ValueListenableBuilder(
-            valueListenable: _dids,
-            builder: (context, value, child) {
-              if (value.isEmpty ) {
-                return const SizedBox.shrink();
-              }
-              return ElevatedButton.icon(
-                onPressed: () {
-                  _dids.newValue(_dids.value..clear());
-                },
-                icon: const Icon(
-                  Icons.clear_all_rounded,
-                  size: 16.0,
-                ),
-                label: const Text('Clear'),
+                label: Text('Download (${value.length})'),
               );
             },
           ),
           const SizedBox(width: 16.0),
         ],
       ),
-      body: ValueListenableBuilder(
-        valueListenable: _loading,
-        builder: (context, loading, child) {
-          if (loading) {
-            return Align(
-              alignment: const AlignmentDirectional(0.0, -0.28),
-              child: Assets.loading.lottie(
-                width: (MediaQuery.of(context).size.width * 0.8)
-                    .coerceAtMost(720.0),
-              ),
-            );
-          }
-          return _buildBody();
-        },
-      ),
+      body: _buildMain(),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Pick .did',
         onPressed: () async {
@@ -139,17 +113,24 @@ class _MyHomePageState extends State<MyHomePage> {
             if (files == null || files.isEmpty) {
               return;
             }
-            final list = await List.generate(files.length, (index) async {
-              final file = files[index];
+            final options = _options.value;
+            final genOption = GenOption(
+              freezed: options.freezed,
+              equal: options.equal,
+              copyWith: options.copyWith,
+              makeCollectionsUnmodifiable: options.makeCollectionsUnmodifiable,
+            );
+            final list = <MapEntry<PlatformFile, List<String>>>[];
+            for (final file in files) {
               final str = await file.readStream!.transform(utf8.decoder).first;
-              final code = did2dart(file.name, str);
+              final code = did2dart(file.name, str, genOption);
               final codes = code
                   .split('\n')
                   .slices(512)
                   .map((e) => e.join('\n'))
                   .toList();
-              return MapEntry(file, codes);
-            }).wait();
+              list.add(MapEntry(file, codes));
+            }
             _dids.newValue(list);
           } finally {
             _loading.value = false;
@@ -160,17 +141,91 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget _buildOptions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 8.0,
+      ),
+      child: ValueListenableBuilder(
+        valueListenable: _options,
+        builder: (context, options, child) {
+          return Wrap(
+            runSpacing: 8.0,
+            spacing: 8.0,
+            children: [
+              ChoiceChip(
+                selected: options.freezed,
+                onSelected: (v) {
+                  _options.newValue(options..freezed = v);
+                },
+                label: const Text("Freezed"),
+              ),
+              ChoiceChip(
+                selected: options.copyWith,
+                onSelected: (v) {
+                  _options.newValue(options..copyWith = v);
+                },
+                label: const Text("CopyWith"),
+              ),
+              ChoiceChip(
+                selected: options.equal,
+                onSelected: (v) {
+                  _options.newValue(options..equal = v);
+                },
+                label: const Text("Equal"),
+              ),
+              ChoiceChip(
+                selected: options.makeCollectionsUnmodifiable,
+                onSelected: (v) {
+                  _options.newValue(options..makeCollectionsUnmodifiable = v);
+                },
+                label: const Text("CollectionsUnmodifiable"),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMain() {
+    return ValueListenableBuilder(
+      valueListenable: _loading,
+      builder: (context, loading, child) {
+        if (loading) {
+          return Align(
+            alignment: const AlignmentDirectional(0.0, -0.28),
+            child: Assets.loading.lottie(
+              width:
+                  (MediaQuery.of(context).size.width * 0.8).coerceAtMost(720.0),
+            ),
+          );
+        }
+        return _buildBody();
+      },
+    );
+  }
+
   Widget _buildBody() {
     return ValueListenableBuilder(
       valueListenable: _dids,
       builder: (context, value, child) {
         if (value.isEmpty) {
-          return Align(
-            alignment: const AlignmentDirectional(0.0, -0.28),
-            child: Assets.empty.lottie(
-              width: (MediaQuery.of(context).size.width * 0.42)
-                  .coerceAtMost(480.0),
-            ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildOptions(),
+              Expanded(
+                child: Align(
+                  alignment: const AlignmentDirectional(0.0, -0.28),
+                  child: Assets.empty.lottie(
+                    width: (MediaQuery.of(context).size.width * 0.42)
+                        .coerceAtMost(480.0),
+                  ),
+                ),
+              ),
+            ],
           );
         }
         return DefaultTabController(
@@ -259,4 +314,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+class CodeOption {
+  bool freezed = false;
+
+  bool makeCollectionsUnmodifiable = false;
+
+  bool equal = true;
+
+  bool copyWith = true;
 }
