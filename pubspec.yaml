@@ -1,6 +1,6 @@
 name: did2dart
-description: A new Flutter project.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+description: Provide applications on different platforms to quickly convert Candid to Dart code.
+publish_to: 'none'
 
 version: 1.0.0+1
 
