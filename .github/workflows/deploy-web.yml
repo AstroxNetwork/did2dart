@@ -16,10 +16,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
-      - name: Setup JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '11.x'
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
