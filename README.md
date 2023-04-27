@@ -1,3 +1,5 @@
+![did2dart](https://socialify.git.ci/iota9star/did2dart/image?description=1&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fiota9star%2Fdid2dart%2Fmain%2Fandroid%2Fapp%2Fsrc%2Fmain%2Fres%2Fmipmap-xxxhdpi%2Fic_launcher_round.png&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Auto)
+
 # Did2dart
 
 ![AppIcon](android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png)
