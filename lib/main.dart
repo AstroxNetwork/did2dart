@@ -119,6 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
               equal: options.equal,
               copyWith: options.copyWith,
               makeCollectionsUnmodifiable: options.makeCollectionsUnmodifiable,
+              service: options.service,
+              injectPackages: _injectPackages.text
+                  .split("\n")
+                  .where((e) => e.isNotEmpty)
+                  .toList(growable: false),
+              preActorCall: _preActorCall.text,
+              postActorCall: _postActorCall.text,
             );
             final list = <MapEntry<PlatformFile, List<String>>>[];
             for (final file in files) {
@@ -155,13 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
             spacing: 8.0,
             children: [
               ChoiceChip(
-                selected: options.freezed,
-                onSelected: (v) {
-                  _options.newValue(options..freezed = v);
-                },
-                label: const Text("Freezed"),
-              ),
-              ChoiceChip(
                 selected: options.copyWith,
                 onSelected: (v) {
                   _options.newValue(options..copyWith = v);
@@ -174,6 +174,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   _options.newValue(options..equal = v);
                 },
                 label: const Text("Equal"),
+              ),
+              ChoiceChip(
+                selected: options.service,
+                onSelected: (v) {
+                  _options.newValue(options..service = v);
+                },
+                label: const Text("Service"),
+              ),
+              ChoiceChip(
+                selected: options.freezed,
+                onSelected: (v) {
+                  _options.newValue(options..freezed = v);
+                },
+                label: const Text("Freezed"),
               ),
               ChoiceChip(
                 selected: options.makeCollectionsUnmodifiable,
@@ -207,6 +221,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  final _injectPackages = TextEditingController();
+  final _preActorCall = TextEditingController();
+  final _postActorCall = TextEditingController();
+
   Widget _buildBody() {
     return ValueListenableBuilder(
       valueListenable: _dids,
@@ -216,6 +234,66 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildOptions(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _injectPackages,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 4,
+                        decoration: const InputDecoration(
+                          hintText:
+                              'package:recase/recase.dart\npackage:dart_style/dart_style.dart',
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                          label: Text('Inject Packages'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: TextField(
+                        controller: _preActorCall,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 4,
+                        decoration: const InputDecoration(
+                          hintText:
+                              'print(method);\nprint(request);\nprint(actor);',
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                          label: Text('Pre Actor Call'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: TextField(
+                        controller: _postActorCall,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 4,
+                        decoration: const InputDecoration(
+                          hintText:
+                              'print(method);\nprint(request);\nprint(actor);\nprint(response);',
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                          label: Text('Post Actor Call'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: Align(
                   alignment: const AlignmentDirectional(0.0, -0.28),
@@ -324,4 +402,6 @@ class CodeOption {
   bool equal = true;
 
   bool copyWith = true;
+
+  bool service = true;
 }

@@ -2,10 +2,10 @@ name: did2dart
 description: Provide applications on different platforms to quickly convert Candid to Dart code.
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
+  sdk: '>=2.19.6 <4.0.0'
 
 dependencies:
   flutter:
