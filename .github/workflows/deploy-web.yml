@@ -27,6 +27,7 @@ jobs:
       - name: Build Web
         run: |
           flutter build web --release --web-renderer canvaskit
+          dart scripts/web.dart
       - name: Deploy
         uses: amondnet/vercel-action@v25
         with:
