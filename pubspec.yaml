@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   file_picker: ^5.2.11
-  candid_dart_core: ^1.0.1
+  candid_dart_core: ^1.1.0
   highlight: ^0.7.0
   flutter_highlight: ^0.7.0
   sliver_tools: ^0.2.10
