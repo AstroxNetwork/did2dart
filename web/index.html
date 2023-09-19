@@ -31,14 +31,17 @@
 
   <title>Did2dart - Fast generation of Dart code from Candid.</title>
   <link rel="manifest" href="manifest.json">
+  <link href="ani.css" type="text/css" rel="stylesheet">
   <style>
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
     #loading {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      top: 0;
-      z-index: 999;
+      inset: 0;
+      z-index: 9;
     }
 
     #loading div {
@@ -60,6 +63,12 @@
         transform: translate(-50%, -50%) rotate(360deg);
       }
     }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: black;
+      }
+    }
   </style>
   <script>
     // The value below is injected by flutter build, do not touch.
@@ -69,9 +78,21 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
-  <div id="loading">
-    <div></div>
-  </div>
+<div id="loading">
+  <div></div>
+  <i class="purple"></i>
+  <i class="medium-blue"></i>
+  <i class="light-blue"></i>
+  <i class="red"></i>
+  <i class="orange"></i>
+  <i class="yellow"></i>
+  <i class="cyan"></i>
+  <i class="light-green"></i>
+  <i class="lime"></i>
+  <i class="magenta"></i>
+  <i class="lightish-red"></i>
+  <i class="pink"></i>
+</div>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

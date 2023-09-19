@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: _buildMain(),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         tooltip: 'Pick .did',
         onPressed: () async {
           _loading.value = true;
@@ -143,7 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
             _loading.value = false;
           }
         },
-        child: const Icon(Icons.add),
+        label: const Text('Pick .did'),
+        icon: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
